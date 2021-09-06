@@ -20,10 +20,8 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 import utils.Formatter;
 import utils.SimpleSender;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Stream;
 
 public class Main extends TelegramLongPollingBot {
 
@@ -215,7 +213,13 @@ public class Main extends TelegramLongPollingBot {
             }
         }
 
-        return msg != null && (msg.contains("@all") || msg.contains("@here"));
+        if (msg != null) {
+            for (String word : msg.split(" ")) {
+                if (word.equals("@all") || word.equals("@here")) return true;
+            }
+        }
+
+        return false;
     }
 
     private void sendReply(BotChat chat, Long chatId, Integer messageId) {
