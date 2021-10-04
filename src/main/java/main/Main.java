@@ -239,20 +239,32 @@ public class Main extends TelegramLongPollingBot {
             }
         });
 
-        for (ChatUser user : users) {
+        for (int i = 0; i < users.size(); i++) {
+            ChatUser user = users.get(i);
+
             if (!chat.isMuted(user.getUserId())) {
                 sb.append("[").append(user.getName()).append("](tg://user?id=").append(user.getUserId()).append(") ");
             } else {
                 sb.append(Formatter.formatTelegramText(user.getName())).append(" ");
                 noReplyCounter++;
             }
+
+            if ((i + 1) % 10 == 0) {
+                sender.sendString(chatId, sb.toString(), messageId);
+                sb = new StringBuilder();
+            }
+        }
+
+        if (!sb.isEmpty()) {
+            sender.sendString(chatId, sb.toString(), messageId);
+            sb = new StringBuilder();
         }
 
         int replies = users.size() - noReplyCounter;
 
-        sb.append("_(").append(replies).append(" упомянуто");
+        sb.append("_").append(replies).append(" упомянуто");
         if (noReplyCounter > 0) sb.append(", ").append(noReplyCounter).append(" не упомянуто");
-        sb.append(")_");
+        sb.append("_");
 
         sender.sendString(chatId, sb.toString(), messageId);
         chat.incrementCallCounter();
