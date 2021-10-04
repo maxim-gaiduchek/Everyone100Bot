@@ -33,6 +33,7 @@ public class Main extends TelegramLongPollingBot {
     private static final String BOT_TOKEN = System.getenv("TEST_BOT_TELEGRAM_TOKEN");*/
     private static final long DEV_CHAT_ID = 505457346L;
     private static final long WAIT_TO_DELETE_MILLIS = 5000;
+    private static final int USERS_TO_MENTION = 20;
 
     private final SimpleSender sender = new SimpleSender(BOT_TOKEN);
     private static final ApplicationContext CONTEXT = new AnnotationConfigApplicationContext(DatasourceConfig.class);
@@ -224,32 +225,23 @@ public class Main extends TelegramLongPollingBot {
 
     private void sendReply(BotChat chat, Long chatId, Integer messageId) {
         StringBuilder sb = new StringBuilder();
-        List<ChatUser> users = chat.getUsers();
-        int noReplyCounter = 0;
+        List<ChatUser> muted = new ArrayList<>();
+        List<ChatUser> users = new ArrayList<>();
 
-        users.sort((u1, u2) -> {
-            if (chat.isMuted(u1.getUserId()) && chat.isMuted(u2.getUserId())) {
-                return u1.getName().compareTo(u2.getName());
-            } else if (chat.isMuted(u1.getUserId())) {
-                return 1;
-            } else if (chat.isMuted(u2.getUserId())) {
-                return -1;
+        for (ChatUser user : chat.getUsers()) {
+            if (chat.isMuted(user.getUserId())) {
+                muted.add(user);
             } else {
-                return u1.getName().compareTo(u2.getName());
+                users.add(user);
             }
-        });
+        }
 
         for (int i = 0; i < users.size(); i++) {
             ChatUser user = users.get(i);
 
-            if (!chat.isMuted(user.getUserId())) {
-                sb.append("[").append(user.getName()).append("](tg://user?id=").append(user.getUserId()).append(") ");
-            } else {
-                sb.append(Formatter.formatTelegramText(user.getName())).append(" ");
-                noReplyCounter++;
-            }
+            sb.append("[").append(user.getName()).append("](tg://user?id=").append(user.getUserId()).append(") ");
 
-            if ((i + 1) % 10 == 0) {
+            if ((i + 1) % USERS_TO_MENTION == 0) {
                 sender.sendString(chatId, sb.toString(), messageId);
                 sb = new StringBuilder();
             }
@@ -260,10 +252,12 @@ public class Main extends TelegramLongPollingBot {
             sb = new StringBuilder();
         }
 
-        int replies = users.size() - noReplyCounter;
+        for (ChatUser user : muted) {
+            sb.append(Formatter.formatTelegramText(user.getName())).append(" ");
+        }
 
-        sb.append("_").append(replies).append(" упомянуто");
-        if (noReplyCounter > 0) sb.append(", ").append(noReplyCounter).append(" не упомянуто");
+        sb.append("_").append(users.size() - muted.size()).append(" упомянуто");
+        if (muted.size() > 0) sb.append(", ").append(muted.size()).append(" не упомянуто");
         sb.append("_");
 
         sender.sendString(chatId, sb.toString(), messageId);

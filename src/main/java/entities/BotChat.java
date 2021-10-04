@@ -33,7 +33,7 @@ public class BotChat {
     @Column(name = "calls")
     private int callCounter;
 
-    private BotChat() {
+    protected BotChat() {
     }
 
     public BotChat(long chatId) {
