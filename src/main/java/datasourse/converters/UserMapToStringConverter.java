@@ -3,11 +3,13 @@ package datasourse.converters;
 import entities.ChatUser;
 
 import javax.persistence.AttributeConverter;
+import javax.persistence.Converter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Converter
 public class UserMapToStringConverter implements AttributeConverter<Map<Integer, ChatUser>, String> {
 
     private static final String SPLIT_REGEX = "\uD83D\uDD4B\uD83D\uDC69\u200D❤️\u200D\uD83D\uDC8B\u200D\uD83D\uDC69\uD83D\uDC37";

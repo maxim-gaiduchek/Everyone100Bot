@@ -256,11 +256,16 @@ public class Main extends TelegramLongPollingBot {
             sb.append(Formatter.formatTelegramText(user.getName())).append(" ");
         }
 
+        if (!sb.isEmpty()) {
+            sender.sendString(chatId, sb.toString(), messageId);
+            sb = new StringBuilder();
+        }
+
         sb.append("_").append(users.size() - muted.size()).append(" упомянуто");
         if (muted.size() > 0) sb.append(", ").append(muted.size()).append(" не упомянуто");
         sb.append("_");
 
-        sender.sendString(chatId, sb.toString(), messageId);
+        sender.sendString(chatId, sb.toString());
         chat.incrementCallCounter();
     }
 

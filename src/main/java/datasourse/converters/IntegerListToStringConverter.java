@@ -1,9 +1,11 @@
 package datasourse.converters;
 
 import javax.persistence.AttributeConverter;
+import javax.persistence.Converter;
 import java.util.ArrayList;
 import java.util.List;
 
+@Converter
 public class IntegerListToStringConverter implements AttributeConverter<List<Integer>, String> {
 
     private static final String SPLIT_REGEX = ",";
