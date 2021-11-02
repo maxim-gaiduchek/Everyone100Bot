@@ -197,7 +197,9 @@ public class Main extends TelegramLongPollingBot {
     }
 
     private void addUser(BotChat chat, User user) {
-        if (user != null && !user.getIsBot()) chat.addUser(new ChatUser(user));
+        if (user != null && !user.getId().equals(777000) && !user.getIsBot()) {
+            chat.addUser(new ChatUser(user));
+        }
     }
 
     private void addUsers(BotChat chat, List<User> users) {
