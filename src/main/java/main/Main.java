@@ -279,7 +279,7 @@ public class Main extends TelegramLongPollingBot {
         String msg = "Теперь я " + (isMuted ? "не " : "") + "буду вас упоминать";
 
         SERVICE.saveBotChat(chat);
-        sender.sendString(chatId, msg);
+        sender.sendString(chatId, msg, messageId);
 
         /*try {
             Message message = sender.sendString(chatId, msg);
