@@ -108,6 +108,7 @@ public class Main extends TelegramLongPollingBot {
                 if (isUserMessage) {
                     sendCommandCannotBeUsed(chatId);
                 } else if (sender.getChatMember(chatId, from.getId()).getStatus().equals("administrator") ||
+                        sender.getChatMember(chatId, from.getId()).getStatus().equals("creator") ||
                         from.getId().equals((int) DEV_CHAT_ID)) {
                     switchEnabled(chatId, message.getMessageId());
                 } else {
@@ -117,7 +118,9 @@ public class Main extends TelegramLongPollingBot {
             case "/donate", "/donate@Everyone100Bot" -> donateCommand(chatId);
             case "/sendstats" -> sendStatistics(chatId, isUserMessage);
             default -> {
-                if (isUserMessage) sendUserMessage(chatId);
+                if (isUserMessage) {
+                    sendUserMessage(chatId);
+                }
             }
         } // TODO change "/help@Everyone100Bot" to "/help@" + BOT_USERNAME
     }
@@ -178,14 +181,16 @@ public class Main extends TelegramLongPollingBot {
             e.printStackTrace();
         }
 
-        if (isBotCalled(message.getEntities(), message.getText()) &&
-                (chat.isEnabled() || from.getId().equals((int) DEV_CHAT_ID) ||
-                        sender.getChatMember(chatId, from.getId()).getStatus().equals("administrator"))) {
-            sendReply(chat, chatId, messageId);
-        } else if (!chat.isEnabled()) {
-            String msg = "*Админ запретил использовать обычным пользователям чата эту команду*. Обратитесь к администраторам этого чата.";
+        if (isBotCalled(message.getEntities(), message.getText())) {
+            if (chat.isEnabled() || from.getId().equals((int) DEV_CHAT_ID) ||
+                    sender.getChatMember(chatId, from.getId()).getStatus().equals("administrator") ||
+                    sender.getChatMember(chatId, from.getId()).getStatus().equals("creator")) {
+                sendReply(chat, chatId, messageId);
+            } else if (!chat.isEnabled()) {
+                String msg = "*Админ запретил использовать обычным пользователям чата эту команду*. Обратитесь к администраторам этого чата.";
 
-            sender.sendString(chatId, msg, messageId);
+                sender.sendString(chatId, msg, messageId);
+            }
         }
 
         SERVICE.saveBotChat(chat);
@@ -358,8 +363,7 @@ public class Main extends TelegramLongPollingBot {
 
         SERVICE.saveBotChat(chat);
         sender.sendString(chatId, msg, messageId);
-
-    } // TODO receive admin rights
+    }
 
     private void donateCommand(Long chatId) {
         String msg = "Творитель будет рад любой мелочи <3";
