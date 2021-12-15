@@ -4,6 +4,7 @@ import org.telegram.telegrambots.bots.DefaultAbsSender;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.meta.api.methods.ActionType;
 import org.telegram.telegrambots.meta.api.methods.AnswerInlineQuery;
+import org.telegram.telegrambots.meta.api.methods.groupadministration.GetChatMember;
 import org.telegram.telegrambots.meta.api.methods.groupadministration.KickChatMember;
 import org.telegram.telegrambots.meta.api.methods.groupadministration.LeaveChat;
 import org.telegram.telegrambots.meta.api.methods.send.*;
@@ -858,6 +859,24 @@ public class SimpleSender extends DefaultAbsSender {
 
     public static InlineKeyboardButton getInlineKeyboardButtonWithSwitchInlineQuery(String text, String switchInlineQuery) {
         return InlineKeyboardButton.builder().text(text).switchInlineQuery(switchInlineQuery).build();
+    }
+
+    // chat member
+
+    public ChatMember getChatMember(Long chatId, Integer userId) {
+        return getChatMember(chatId.toString(), userId);
+    }
+
+    public ChatMember getChatMember(String chatId, Integer userId) {
+        GetChatMember chatMember = new GetChatMember(chatId, userId);
+
+        try {
+            return execute(chatMember);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     // token

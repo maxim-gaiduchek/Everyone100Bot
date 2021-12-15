@@ -89,6 +89,7 @@ public class Main extends TelegramLongPollingBot {
 
     private void parseCommand(Message message) {
         Long chatId = message.getChatId();
+        User from = message.getFrom();
         boolean isUserMessage = message.isUserMessage();
 
         switch (message.getText()) {
@@ -103,6 +104,16 @@ public class Main extends TelegramLongPollingBot {
                 }
             }
             case "/help", "/help@Everyone100Bot" -> helpCommand(chatId, isUserMessage);
+            case "/switchpermission", "/switchpermission@Everyone100Bot" -> {
+                if (isUserMessage) {
+                    sendCommandCannotBeUsed(chatId);
+                } else if (sender.getChatMember(chatId, from.getId()).getStatus().equals("administrator") ||
+                        from.getId().equals((int) DEV_CHAT_ID)) {
+                    switchEnabled(chatId, message.getMessageId());
+                } else {
+                    sendOnlyAdminCommand(chatId, message.getMessageId());
+                }
+            }
             case "/donate", "/donate@Everyone100Bot" -> donateCommand(chatId);
             case "/sendstats" -> sendStatistics(chatId, isUserMessage);
             default -> {
@@ -121,6 +132,7 @@ public class Main extends TelegramLongPollingBot {
                 /everyone - Упомянуть всех
                 /switchmute - Выкл./вкл. упоминание себя
                 /help - Как пользоваться ботом
+                /switchpermission - Запретить обычным пользователям использовать команду /everyone (только для админов)
                 /donate - Помочь творителю :З""";
 
         sender.sendStringAndInlineKeyboard(chatId, msg, getDonationKeyboard());
@@ -133,6 +145,13 @@ public class Main extends TelegramLongPollingBot {
         sender.sendString(chatId, msg);
     }
 
+    private void sendOnlyAdminCommand(Long chatId, Integer messageId) {
+        String msg = """
+                Эта команда может использоваться только админами""";
+
+        sender.sendString(chatId, msg, messageId);
+    }
+
     private void parseGroupMessage(Message message) {
         Long chatId = message.getChat().getId();
         Integer messageId = message.getMessageId();
@@ -141,9 +160,10 @@ public class Main extends TelegramLongPollingBot {
             sendFirstGroupMessage(chatId);
         }
 
+        User from = message.getFrom();
         BotChat chat = getChat(chatId);
 
-        addUser(chat, message.getFrom());
+        addUser(chat, from);
         if (message.isReply()) {
             addUser(chat, message.getReplyToMessage().getFrom());
         }
@@ -158,8 +178,14 @@ public class Main extends TelegramLongPollingBot {
             e.printStackTrace();
         }
 
-        if (isBotCalled(message.getEntities(), message.getText())) {
+        if (isBotCalled(message.getEntities(), message.getText()) &&
+                (chat.isEnabled() || from.getId().equals((int) DEV_CHAT_ID) ||
+                        sender.getChatMember(chatId, from.getId()).getStatus().equals("administrator"))) {
             sendReply(chat, chatId, messageId);
+        } else if (!chat.isEnabled()) {
+            String msg = "*Админ запретил использовать обычным пользователям чата эту команду*. Обратитесь к администраторам этого чата.";
+
+            sender.sendString(chatId, msg, messageId);
         }
 
         SERVICE.saveBotChat(chat);
@@ -175,6 +201,7 @@ public class Main extends TelegramLongPollingBot {
                 /everyone - Упомянуть всех
                 /switchmute - Выкл./вкл. упоминание себя
                 /help - Как пользоваться ботом
+                /switchpermission - Запретить обычным пользователям использовать команду /everyone (только для админов)
                 /donate - Помочь творителю :З""";
 
         sender.sendStringAndInlineKeyboard(chatId, msg, getDonationKeyboard());
@@ -305,6 +332,7 @@ public class Main extends TelegramLongPollingBot {
                     /everyone - Упомянуть всех
                     /switchmute - Выкл./вкл. упоминание себя
                     /help - Как пользоваться ботом
+                    /switchpermission - Запретить обычным пользователям использовать команду /everyone (только для админов)
                     /donate - Помочь творителю :З""";
         } else {
             msg = """
@@ -316,11 +344,22 @@ public class Main extends TelegramLongPollingBot {
                     /everyone - Упомянуть всех
                     /switchmute - Выкл./вкл. упоминание себя
                     /help - Как пользоваться ботом
+                    /switchpermission - Запретить обычным пользователям использовать команду /everyone (только для админов)
                     /donate - Помочь творителю :З""";
         }
 
         sender.sendString(chatId, msg);
     }
+
+    private void switchEnabled(Long chatId, Integer messageId) {
+        BotChat chat = getChat(chatId);
+        boolean enabled = chat.switchEnabled();
+        String msg = "Теперь использование команды обычным пользователям теперь *" + (enabled ? "разрешено" : "запрещено") + "*";
+
+        SERVICE.saveBotChat(chat);
+        sender.sendString(chatId, msg, messageId);
+
+    } // TODO receive admin rights
 
     private void donateCommand(Long chatId) {
         String msg = "Творитель будет рад любой мелочи <3";

@@ -33,6 +33,9 @@ public class BotChat {
     @Column(name = "calls")
     private int callCounter;
 
+    @Column(name = "enabled")
+    private boolean enabled = true;
+
     protected BotChat() {
     }
 
@@ -60,6 +63,10 @@ public class BotChat {
 
     public boolean isMuted(Integer userId) {
         return muted.contains(userId);
+    }
+
+    public boolean isEnabled() {
+        return enabled;
     }
 
     // setters
@@ -95,6 +102,12 @@ public class BotChat {
         callCounter++;
     }
 
+    public boolean switchEnabled() {
+        enabled = !enabled;
+
+        return enabled;
+    }
+
     // core
 
     @Override
@@ -113,11 +126,12 @@ public class BotChat {
     @Override
     public String toString() {
         return "BotChat{" +
-               "id=" + id +
-               ", chatId=" + chatId +
-               ", users=" + users +
-               ", muted=" + muted +
-               ", callCounter=" + callCounter +
-               '}';
+                "id=" + id +
+                ", chatId=" + chatId +
+                ", users=" + users +
+                ", muted=" + muted +
+                ", callCounter=" + callCounter +
+                ", enabled=" + enabled +
+                '}';
     }
 }
