@@ -359,7 +359,7 @@ public class Main extends TelegramLongPollingBot {
     private void switchEnabled(Long chatId, Integer messageId) {
         BotChat chat = getChat(chatId);
         boolean enabled = chat.switchEnabled();
-        String msg = "Теперь использование команды обычным пользователям теперь *" + (enabled ? "разрешено" : "запрещено") + "*";
+        String msg = "Теперь использование команды обычным пользователям *" + (enabled ? "разрешено" : "запрещено") + "*";
 
         SERVICE.saveBotChat(chat);
         sender.sendString(chatId, msg, messageId);
