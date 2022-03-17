@@ -5,7 +5,7 @@ import org.telegram.telegrambots.meta.api.objects.User;
 public class ChatUser {
 
     private String name;
-    private final Integer userId;
+    private final Long userId;
     // TODO isMuted
 
     public ChatUser(User user) {
@@ -15,7 +15,7 @@ public class ChatUser {
 
     public ChatUser(String[] dbInfo) {
         this.name = dbInfo[0];
-        this.userId = Integer.parseInt(dbInfo[1]);
+        this.userId = Long.parseLong(dbInfo[1]);
     }
 
     // getters
@@ -24,7 +24,7 @@ public class ChatUser {
         return name;
     }
 
-    public Integer getUserId() {
+    public Long getUserId() {
         return userId;
     }
 

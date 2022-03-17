@@ -6,12 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Converter
-public class IntegerListToStringConverter implements AttributeConverter<List<Integer>, String> {
+public class LongsListToStringConverter implements AttributeConverter<List<Long>, String> {
 
     private static final String SPLIT_REGEX = ",";
 
     @Override
-    public String convertToDatabaseColumn(List<Integer> longs) {
+    public String convertToDatabaseColumn(List<Long> longs) {
         if (longs == null || longs.isEmpty()) return "";
 
         StringBuilder sb = new StringBuilder().append(longs.get(0));
@@ -21,13 +21,13 @@ public class IntegerListToStringConverter implements AttributeConverter<List<Int
     }
 
     @Override
-    public List<Integer> convertToEntityAttribute(String s) {
-        List<Integer> ids = new ArrayList<>();
+    public List<Long> convertToEntityAttribute(String s) {
+        List<Long> ids = new ArrayList<>();
 
         s = s.trim();
         if (!s.equals("")) {
             for (String id : s.split(SPLIT_REGEX)) {
-                ids.add(Integer.parseInt(id));
+                ids.add(Long.parseLong(id));
             }
         }
 

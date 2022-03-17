@@ -10,13 +10,13 @@ import java.util.List;
 import java.util.Map;
 
 @Converter
-public class UserMapToStringConverter implements AttributeConverter<Map<Integer, ChatUser>, String> {
+public class UserMapToStringConverter implements AttributeConverter<Map<Long, ChatUser>, String> {
 
     private static final String SPLIT_REGEX = "\uD83D\uDD4B\uD83D\uDC69\u200D❤️\u200D\uD83D\uDC8B\u200D\uD83D\uDC69\uD83D\uDC37";
     private static final String USER_SPLIT_REGEX = "\uD83E\uDD9A\uD83C\uDF28\uD83E\uDD52";
 
     @Override
-    public String convertToDatabaseColumn(Map<Integer, ChatUser> users) {
+    public String convertToDatabaseColumn(Map<Long, ChatUser> users) {
         if (users.isEmpty()) return "";
 
         StringBuilder sb = new StringBuilder();
@@ -31,8 +31,8 @@ public class UserMapToStringConverter implements AttributeConverter<Map<Integer,
     }
 
     @Override
-    public Map<Integer, ChatUser> convertToEntityAttribute(String s) {
-        Map<Integer, ChatUser> map = new HashMap<>();
+    public Map<Long, ChatUser> convertToEntityAttribute(String s) {
+        Map<Long, ChatUser> map = new HashMap<>();
 
         s = s.trim();
         if (s.equals("")) return map;

@@ -20,8 +20,10 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 import utils.Formatter;
 import utils.SimpleSender;
 
-import java.util.*;
-import java.util.stream.Stream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Main extends TelegramLongPollingBot {
 
@@ -109,7 +111,7 @@ public class Main extends TelegramLongPollingBot {
                     sendCommandCannotBeUsed(chatId);
                 } else if (sender.getChatMember(chatId, from.getId()).getStatus().equals("administrator") ||
                         sender.getChatMember(chatId, from.getId()).getStatus().equals("creator") ||
-                        from.getId().equals((int) DEV_CHAT_ID)) {
+                        from.getId().equals(DEV_CHAT_ID)) {
                     switchEnabled(chatId, message.getMessageId());
                 } else {
                     sendOnlyAdminCommand(chatId, message.getMessageId());
@@ -182,7 +184,7 @@ public class Main extends TelegramLongPollingBot {
         }
 
         if (isBotCalled(message.getEntities(), message.getText())) {
-            if (chat.isEnabled() || from.getId().equals((int) DEV_CHAT_ID) ||
+            if (chat.isEnabled() || from.getId().equals(DEV_CHAT_ID) ||
                     sender.getChatMember(chatId, from.getId()).getStatus().equals("administrator") ||
                     sender.getChatMember(chatId, from.getId()).getStatus().equals("creator")) {
                 sendReply(chat, chatId, messageId);
@@ -229,7 +231,7 @@ public class Main extends TelegramLongPollingBot {
     }
 
     private void addUser(BotChat chat, User user) {
-        if (user != null && !user.getId().equals(777000) && !user.getIsBot()) {
+        if (user != null && !user.getId().equals(777000L) && !user.getIsBot()) {
             chat.addUser(new ChatUser(user));
         }
     }
@@ -242,9 +244,9 @@ public class Main extends TelegramLongPollingBot {
         if (entities != null) {
             for (MessageEntity entity : entities) {
                 if (entity.getText().equals("/everyone@" + BOT_USERNAME) ||
-                    entity.getText().equals("@" + BOT_USERNAME) ||
-                    entity.getText().equals("/everyone") ||
-                    entity.getText().equals("@everyone")) return true;
+                        entity.getText().equals("@" + BOT_USERNAME) ||
+                        entity.getText().equals("/everyone") ||
+                        entity.getText().equals("@everyone")) return true;
             }
         }
 
@@ -305,7 +307,7 @@ public class Main extends TelegramLongPollingBot {
 
     // commands
 
-    private void switchMuteCommand(Long chatId, Integer userId, Integer messageId) {
+    private void switchMuteCommand(Long chatId, Long userId, Integer messageId) {
         BotChat chat = getChat(chatId);
         boolean isMuted = chat.switchMute(userId);
         String msg = "Теперь я " + (isMuted ? "не " : "") + "буду вас упоминать";
@@ -376,7 +378,7 @@ public class Main extends TelegramLongPollingBot {
     private void sendStatistics(Long chatId, boolean isUserMessage) {
         if (chatId.equals(DEV_CHAT_ID)) {
             String msg = "Бота добавлено в *" + chatsByChatIds.size() + " чата(-ов)*!\n" +
-                         "Ботом воспользовались *" + SERVICE.getSumOfCallCounters() + " раз(-а)*!";
+                    "Ботом воспользовались *" + SERVICE.getSumOfCallCounters() + " раз(-а)*!";
 
             sender.sendString(DEV_CHAT_ID, msg);
         } else {

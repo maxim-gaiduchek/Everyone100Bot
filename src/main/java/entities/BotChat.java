@@ -1,6 +1,6 @@
 package entities;
 
-import datasourse.converters.IntegerListToStringConverter;
+import datasourse.converters.LongsListToStringConverter;
 import datasourse.converters.UserMapToStringConverter;
 import main.Main;
 
@@ -24,11 +24,11 @@ public class BotChat {
 
     @Column(name = "users")
     @Convert(converter = UserMapToStringConverter.class)
-    private final Map<Integer, ChatUser> users = new HashMap<>();
+    private final Map<Long, ChatUser> users = new HashMap<>();
 
     @Column(name = "muted")
-    @Convert(converter = IntegerListToStringConverter.class)
-    private final List<Integer> muted = new ArrayList<>();
+    @Convert(converter = LongsListToStringConverter.class)
+    private final List<Long> muted = new ArrayList<>();
 
     @Column(name = "calls")
     private int callCounter;
@@ -53,7 +53,7 @@ public class BotChat {
         return chatId;
     }
 
-    public Map<Integer, ChatUser> getUsersMap() {
+    public Map<Long, ChatUser> getUsersMap() {
         return users;
     }
 
@@ -61,7 +61,7 @@ public class BotChat {
         return new ArrayList<>(users.values());
     }
 
-    public boolean isMuted(Integer userId) {
+    public boolean isMuted(Long userId) {
         return muted.contains(userId);
     }
 
@@ -72,7 +72,7 @@ public class BotChat {
     // setters
 
     public void addUser(ChatUser user) {
-        Integer userId = user.getUserId();
+        Long userId = user.getUserId();
 
         if (users.containsKey(userId)) {
             users.get(userId).setName(user.getName());
@@ -82,11 +82,11 @@ public class BotChat {
         }
     }
 
-    public void deleteUser(Integer userId) {
+    public void deleteUser(Long userId) {
         users.remove(userId);
     }
 
-    public boolean switchMute(Integer userId) {
+    public boolean switchMute(Long userId) {
         boolean isMuted = isMuted(userId);
 
         if (isMuted) {
