@@ -31,11 +31,12 @@ public class Main extends TelegramLongPollingBot {
 
     private static final String BOT_USERNAME = System.getenv("EVERYONE_100BOT_TELEGRAM_USERNAME");
     private static final String BOT_TOKEN = System.getenv("EVERYONE_100BOT_TELEGRAM_TOKEN");
+    private static final long DEV_CHAT_ID = Long.parseLong(System.getenv("DEV_CHAT_ID"));
+    private static final int USERS_TO_MENTION = Integer.parseInt(System.getenv("USERS_TO_MENTION"));
+
     /*private static final String BOT_USERNAME = System.getenv("TEST_BOT_TELEGRAM_USERNAME");
     private static final String BOT_TOKEN = System.getenv("TEST_BOT_TELEGRAM_TOKEN");*/
-    private static final long DEV_CHAT_ID = 505457346L;
-    private static final long WAIT_TO_DELETE_MILLIS = 5000;
-    private static final int USERS_TO_MENTION = 20;
+    //private static final long WAIT_TO_DELETE_MILLIS = 5000;
 
     private final SimpleSender sender = new SimpleSender(BOT_TOKEN);
     private static final ApplicationContext CONTEXT = new AnnotationConfigApplicationContext(DatasourceConfig.class);
